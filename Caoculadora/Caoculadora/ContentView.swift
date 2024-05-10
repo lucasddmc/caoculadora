@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-enum Size: String, CaseIterable {
-    case small = "Pequeno"
-    case medium = "Médio"
-    case large = "Grande"
-}
-
 struct ContentView: View {
     @State var years: Int? = nil
     @State var months: Int? = nil
@@ -24,19 +18,23 @@ struct ContentView: View {
         VStack(alignment: .leading) {
             Spacer()
             Text("Qual a idade do seu cão?")
+                .font(.header5)
             Text("Anos")
+                .font(.body1)
             TextField(
                 "Digite a idade do seu cão em anos caninos",
                 value: $years,
                 format: .number
             )
             Text("Meses")
+                .font(.body1)
             TextField(
                 "E quantos meses além disso ele tem",
                 value: $months,
                 format: .number
             )
             Text("Porte")
+                .font(.body1)
             
             Picker(selection: $size, label: Text("Porte")) {
                 ForEach(Size.allCases, id: \.self) { value in
@@ -67,6 +65,7 @@ struct ContentView: View {
                     .background(Color.teal)
                     .foregroundStyle(.white)
                     .clipShape(.rect(cornerRadius: 10))
+                    .font(.body1)
             })
         }
         .textFieldStyle(.roundedBorder)
@@ -99,18 +98,36 @@ struct ContentView: View {
             return
         }
         
-        result = (years + (months / 12)) * 7
-        
-        guard var result else {
+        guard let result else {
             print("Ocorreu um erro")
             return
         }
         
-        if size == .large {
-            self.result = Int(Double(result) * 0.8)
-        } else if size == .medium {
-            self.result = Int(Double(result) * 0.9)
+//        if size == .large {
+//            self.result = Int(Double(result) * 0.8)
+//        } else if size == .medium {
+//            self.result = Int(Double(result) * 0.9)
+//        }
+        
+        let multiplier: Int?
+        
+        switch size {
+        case .small:
+            multiplier = 6
+        case .medium:
+            multiplier = 7
+        case .large:
+            multiplier = 8
+        default:
+            multiplier = nil
         }
+        
+        guard let multiplier else {
+            print("Multiplier was never set")
+            return
+        }
+        
+        self.result = size?.ageConversion(years: years, months: months)
     }
 }
 
